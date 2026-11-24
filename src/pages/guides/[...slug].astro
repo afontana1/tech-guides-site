@@ -26,6 +26,7 @@ const searchAliases = concepts.flatMap(concept => [concept.name, ...concept.alia
     </article><aside class="article-toc" data-pagefind-ignore><details open><summary>On this page</summary><nav aria-label="On this page">{headings.map(heading => <a href={`#${heading.id}`} class:list={{ 'toc-nested': heading.depth > 2 }}>{heading.text}</a>)}</nav></details>{concepts.length > 0 && <div class="toc-concepts"><h2>Connected concepts</h2>{concepts.map(concept => <a href={url(`concepts/${concept.id}/`)}>{concept.name}</a>)}</div>}</aside></div>
     {related.length > 0 && <section class="section-block related-guides" data-pagefind-ignore><div class="section-heading"><div><div class="eyebrow">FOLLOW THE THREAD</div><h2>Continue exploring</h2><p>Related guides selected by their shared concepts.</p></div></div><div class="guide-grid two-col">{related.map(item => <GuideCard guide={item} />)}</div></section>}
   </div>
+  <script src="../../scripts/mermaid.js"></script>
   <script>
     for (const pre of document.querySelectorAll<HTMLPreElement>('.prose pre')) {
       const button = document.createElement('button'); button.type = 'button'; button.className = 'copy-code'; button.textContent = 'Copy'; button.setAttribute('aria-label','Copy code to clipboard');

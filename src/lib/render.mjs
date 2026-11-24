@@ -11,6 +11,7 @@ import rehypeShiki from '@shikijs/rehype';
 import rehypeStringify from 'rehype-stringify';
 import { visit } from 'unist-util-visit';
 import { prepareMarkdown, resolveGuideLink } from './library.mjs';
+import rehypeMermaid from './mermaid.mjs';
 
 const text = node => node.type === 'text' ? node.value : (node.children || []).map(text).join('');
 const schema = { ...defaultSchema, attributes: { ...defaultSchema.attributes,
@@ -29,6 +30,7 @@ export async function renderGuide(guide) {
   }
   const result = await unified().use(remarkParse).use(remarkGfm).use(remarkMath)
     .use(remarkRehype, { allowDangerousHtml: true }).use(rehypeRaw).use(rehypeSanitize, schema)
+    .use(rehypeMermaid)
     .use(rehypeSlug).use(rehypeKatex, { throwOnError: false, strict: false })
     .use(rehypeShiki, { themes: { light: 'github-light', dark: 'github-dark' }, defaultColor: false, fallbackLanguage: 'text' })
     .use(annotations).use(rehypeStringify).process(prepareMarkdown(guide.raw, guide.title));

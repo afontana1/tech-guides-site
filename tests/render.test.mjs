@@ -17,3 +17,12 @@ test('unknown code languages render without breaking a guide', async () => {
   const { html } = await renderGuide({ title: 'Example', file: 'python/example.md', raw: '```not-a-real-language\nexample code\n```' });
   assert.ok(html.includes('example code'));
 });
+
+test('Mermaid is kept as escaped diagram source instead of highlighted code', async () => {
+  const { html } = await renderGuide({ title: 'Diagram', file: 'microservices/example.md', raw: '```mermaid\nflowchart TD\nA[Order Service] --> B[(Order Data)]\n```\n\n```python\nprint("normal code")\n```' });
+  assert.ok(html.includes('class="mermaid-diagram"'));
+  assert.ok(html.includes('class="mermaid-source"'));
+  assert.ok(html.includes('Order Service') && html.includes('Order Data'));
+  assert.ok(!html.includes('language-mermaid'));
+  assert.ok(html.includes('shiki'));
+});

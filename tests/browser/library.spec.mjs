@@ -40,3 +40,19 @@ test('concept filtering and the mobile layout work', async ({ page }) => {
   const widths = await page.evaluate(() => ({ page: document.documentElement.scrollWidth, viewport: innerWidth }));
   expect(widths.page).toBeLessThanOrEqual(widths.viewport);
 });
+
+test('Mermaid flowcharts render as SVG and follow the color theme', async ({ page }) => {
+  await page.goto(`${base}/guides/microservices/01-service-boundary-and-decomposition-patterns/`);
+  const diagram = page.locator('.mermaid-diagram').first();
+  await diagram.scrollIntoViewIfNeeded();
+  await expect(diagram.locator('.mermaid-output svg')).toBeVisible({ timeout: 30000 });
+  await expect(diagram).toHaveAttribute('data-diagram-state', 'ready');
+  const previousTheme = await diagram.getAttribute('data-diagram-theme');
+  await page.getByRole('button', { name: 'Switch color theme' }).click();
+  await expect(diagram).not.toHaveAttribute('data-diagram-theme', previousTheme);
+  await expect(diagram.locator('.mermaid-output svg')).toBeVisible();
+  const orderDiagram = page.locator('.mermaid-diagram').filter({ hasText: 'Feature: Cancel an Order' }).first();
+  await orderDiagram.scrollIntoViewIfNeeded();
+  await expect(orderDiagram.locator('.mermaid-output svg')).toBeVisible({ timeout: 30000 });
+  await expect(orderDiagram.locator('.mermaid-output svg')).toContainText('Order Service');
+});

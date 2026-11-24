@@ -53,7 +53,7 @@ The execution-policy option applies only to this command's PowerShell process. T
 
 Keep editing the original Markdown files in their topic folders. The build reads these folders directly; the site does not require moving them into `src/` or adding frontmatter to every file. New Markdown files are included automatically on the next build.
 
-The original files remain unchanged. During rendering, the site turns `Slide 1: …` lines into section headings, adds anchor links, highlights fenced code, renders math, and rewrites recognized relative Markdown links to their published pages.
+The original files remain unchanged. During rendering, the site turns `Slide 1: …` lines into section headings, adds anchor links, highlights fenced code, renders math, and rewrites recognized relative Markdown links to their published pages. Fenced `mermaid` blocks become interactive-page SVG diagrams, rendered as they approach the viewport. They follow the light/dark theme and retain a collapsible source view. Mermaid is bundled with the site, so diagram rendering does not depend on a third-party CDN.
 
 The source content includes tutorials and examples with differing scopes. Generated summaries and topic matching aid discovery; they are not a technical review of every tutorial.
 

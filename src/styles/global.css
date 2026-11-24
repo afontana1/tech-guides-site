@@ -32,3 +32,14 @@
   .topic-card p,.guide-card>p,.filter-note,.filter-note p,.concept-journey a>span:last-child{font-size:.875rem}
   .prose{font-size:1rem}
 }
+
+@layer article {
+  .prose .mermaid-diagram{margin:26px 0;border:1px solid var(--line);border-radius:12px;background:var(--surface);overflow:hidden}
+  .mermaid-output{padding:22px;overflow-x:auto;min-height:100px;text-align:center}
+  .mermaid-output>svg{display:block;width:100%;max-width:100%;height:auto;margin:auto}
+  .prose .mermaid-status{font-size:.875rem;color:var(--muted);margin:10px 0}
+  .mermaid-details{border-top:1px solid var(--line);text-align:left}
+  .mermaid-details>summary{padding:11px 17px;font-size:.875rem;color:var(--muted);cursor:pointer}
+  .mermaid-details>summary:hover{color:var(--blue)}
+  .prose .mermaid-source{margin:0;border:0;border-top:1px solid var(--line);border-radius:0;text-align:left}
+}
