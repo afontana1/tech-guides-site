@@ -51,8 +51,13 @@ test('Mermaid flowcharts render as SVG and follow the color theme', async ({ pag
   await page.getByRole('button', { name: 'Switch color theme' }).click();
   await expect(diagram).not.toHaveAttribute('data-diagram-theme', previousTheme);
   await expect(diagram.locator('.mermaid-output svg')).toBeVisible();
-  const orderDiagram = page.locator('.mermaid-diagram').filter({ hasText: 'Feature: Cancel an Order' }).first();
+  const orderDiagram = page.locator('.mermaid-diagram')
+    .filter({ has: page.locator('.mermaid-source code', { hasText: 'Feature[Feature: Cancel an Order]' }) })
+    .filter({ has: page.locator('.mermaid-source code', { hasText: 'Orders[Order Service]' }) });
+  await expect(orderDiagram).toHaveCount(1);
   await orderDiagram.scrollIntoViewIfNeeded();
   await expect(orderDiagram.locator('.mermaid-output svg')).toBeVisible({ timeout: 30000 });
-  await expect(orderDiagram.locator('.mermaid-output svg')).toContainText('Order Service');
+  await expect(orderDiagram).toHaveAttribute('data-diagram-state', 'ready');
+  await expect(orderDiagram.locator('.mermaid-output').getByText('Order Service', { exact: true })).toBeVisible();
+  await expect(orderDiagram.locator('.mermaid-output').getByText('Order Data', { exact: true })).toBeVisible();
 });
