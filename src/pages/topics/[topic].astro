@@ -1,0 +1,14 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import GuideCard from '../../components/GuideCard.astro';
+import { getTopics, getLibrary, url } from '../../lib/library.mjs';
+export function getStaticPaths() { return getTopics().map(topic => ({ params: { topic: topic.id }, props: { topic } })); }
+const { topic } = Astro.props;
+const guides = getLibrary().filter(guide => guide.topic === topic.id);
+const categories = [...new Set(guides.map(guide => guide.category))].sort();
+---
+<Layout title={`${topic.name} — Tech Guides`} description={topic.description}>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href={url()}>Home</a><span>/</span><span>{topic.name}</span></nav>
+  <section class="page-intro"><div class="eyebrow">{topic.count} GUIDES TO EXPLORE</div><h1>{topic.name}</h1><p>{topic.description}</p><a class="button" href={url(`search/?topic=${topic.id}`)}>Search this area</a></section>
+  <div class="topic-browser"><aside class="topic-sections"><h2>In this area</h2>{categories.map((category,i) => <a href={`#section-${i}`}>{category}</a>)}</aside><div>{categories.map((category,i) => <section class="topic-section" id={`section-${i}`}><div class="section-heading"><h2>{category === 'Overview' ? 'Start exploring' : category}</h2><span class="muted">{guides.filter(guide => guide.category === category).length} guides</span></div><div class="guide-grid two-col">{guides.filter(guide => guide.category === category).map(guide => <GuideCard guide={guide} compact />)}</div></section>)}</div></div>
+</Layout>

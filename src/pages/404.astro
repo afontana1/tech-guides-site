@@ -1,0 +1,5 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { url } from '../lib/library.mjs';
+---
+<Layout title="Guide not found — Tech Guides"><section class="empty-state not-found"><div class="eyebrow">404 · A DIFFERENT PATH</div><h1>This page isn’t here.</h1><p>The guide may have moved. Search for its title or concept to find it in the library.</p><a class="button" href={url('search/')}>Search the library</a><a class="text-link" href={url()}>Return home</a></section></Layout>

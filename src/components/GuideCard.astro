@@ -1,0 +1,11 @@
+---
+import { conceptLabels, url } from '../lib/library.mjs';
+const { guide, compact = false } = Astro.props;
+const labels = conceptLabels(guide).slice(0, 2);
+---
+<article class:list={['guide-card', { compact }]}>
+  <div class="card-meta"><span>{guide.topicName}</span><span>{guide.format}</span></div>
+  <h3><a href={guide.href}>{guide.title}</a></h3>
+  {!compact && <p>{guide.summary}</p>}
+  <div class="card-bottom"><div class="tags">{labels.map(concept => <a href={url(`concepts/${concept.id}/`)}>{concept.name}</a>)}</div><span class="reading-time">{guide.minutes} min read</span></div>
+</article>

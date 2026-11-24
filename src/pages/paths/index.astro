@@ -1,0 +1,10 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { paths } from '../../data/topics.mjs';
+import { getConcepts, url } from '../../lib/library.mjs';
+const concepts = getConcepts();
+---
+<Layout title="Learning paths — Tech Guides">
+  <section class="page-intro"><div class="eyebrow">MAKE THE CONNECTIONS</div><h1>A little structure.<br />Room to explore.</h1><p>Follow a suggested sequence of concepts. Each step opens a collection of guides, so you can choose the depth and approach that works for you.</p></section>
+  <div class="learning-paths">{paths.map(path => <section class="learning-path" id={path.id}><div><span class="eyebrow">{path.concepts.length} CONCEPTS</span><h2>{path.title}</h2><p>{path.description}</p></div><ol>{path.concepts.map(id => { const concept = concepts.find(c => c.id === id); return concept && <li><a href={url(`concepts/${id}/`)}><strong>{concept.name}</strong><span>{concept.description}</span><small>{concept.guides.length} guides to choose from</small></a></li>; })}</ol></section>)}</div>
+</Layout>

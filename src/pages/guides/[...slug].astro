@@ -1,0 +1,41 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import GuideCard from '../../components/GuideCard.astro';
+import { getLibrary, conceptLabels, relatedGuides, url } from '../../lib/library.mjs';
+import { renderGuide } from '../../lib/render.mjs';
+import 'katex/dist/katex.min.css';
+export function getStaticPaths() { return getLibrary().map(guide => ({ params: { slug: guide.slug }, props: { guide } })); }
+const { guide } = Astro.props;
+const { html, headings } = await renderGuide(guide);
+const concepts = conceptLabels(guide), related = relatedGuides(guide);
+const searchAliases = concepts.flatMap(concept => [concept.name, ...concept.aliases]).join(', ');
+---
+<Layout title={`${guide.title} — Tech Guides`} description={guide.summary} wide>
+  <div class="article-shell">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href={url()}>Home</a><span>/</span><a href={url(`topics/${guide.topic}/`)}>{guide.topicName}</a><span>/</span><span>{guide.category}</span></nav>
+    <div class="article-grid"><article class="guide-article" data-pagefind-body>
+      <header class="article-header"><div class="article-meta"><a href={url(`topics/${guide.topic}/`)} data-pagefind-meta="topicName">{guide.topicName}</a><span>{guide.format}</span><span>{guide.minutes} min read</span></div><h1 data-pagefind-meta="title">{guide.title}</h1><p class="article-summary">{guide.summary}</p><div class="tags">{concepts.slice(0,5).map(concept => <a href={url(`concepts/${concept.id}/`)}>{concept.name}</a>)}</div><a class="source-link" href={guide.source}>View Markdown source on GitHub</a></header>
+      <span hidden data-pagefind-meta={`slug:${guide.slug}`}></span>
+      <span hidden data-pagefind-meta={`aliases:${searchAliases}`}></span>
+      <span hidden data-pagefind-filter={`topic:${guide.topic}`}></span>
+      <span hidden data-pagefind-filter={`format:${guide.format}`}></span>
+      {concepts.map(concept => <span hidden data-pagefind-filter={`concept:${concept.id}`}></span>)}
+      {guide.note && <aside class="notice" data-pagefind-ignore>{guide.note} The original Markdown is preserved.</aside>}
+      <div class="prose" set:html={html} />
+      <div class="article-end" data-pagefind-ignore><p>Keep exploring this idea.</p><a class="text-link" href={url(`search/?topic=${guide.topic}`)}>More in {guide.topicName}</a></div>
+    </article><aside class="article-toc" data-pagefind-ignore><details open><summary>On this page</summary><nav aria-label="On this page">{headings.map(heading => <a href={`#${heading.id}`} class:list={{ 'toc-nested': heading.depth > 2 }}>{heading.text}</a>)}</nav></details>{concepts.length > 0 && <div class="toc-concepts"><h2>Connected concepts</h2>{concepts.map(concept => <a href={url(`concepts/${concept.id}/`)}>{concept.name}</a>)}</div>}</aside></div>
+    {related.length > 0 && <section class="section-block related-guides" data-pagefind-ignore><div class="section-heading"><div><div class="eyebrow">FOLLOW THE THREAD</div><h2>Continue exploring</h2><p>Related guides selected by their shared concepts.</p></div></div><div class="guide-grid two-col">{related.map(item => <GuideCard guide={item} />)}</div></section>}
+  </div>
+  <script>
+    for (const pre of document.querySelectorAll<HTMLPreElement>('.prose pre')) {
+      const button = document.createElement('button'); button.type = 'button'; button.className = 'copy-code'; button.textContent = 'Copy'; button.setAttribute('aria-label','Copy code to clipboard');
+      button.addEventListener('click', async () => { try { await navigator.clipboard.writeText(pre.querySelector('code')?.textContent || ''); button.textContent='Copied'; setTimeout(() => button.textContent='Copy',1800); } catch { button.textContent='Select code to copy'; } });
+      pre.append(button);
+    }
+    const links = [...document.querySelectorAll<HTMLAnchorElement>('.article-toc nav a')];
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(entries => { for (const entry of entries) if (entry.isIntersecting) for (const link of links) link.classList.toggle('current', link.hash.slice(1) === entry.target.id); }, { rootMargin: '-80px 0px -65% 0px' });
+      for (const heading of document.querySelectorAll('.prose h1[id], .prose h2[id], .prose h3[id], .prose h4[id]')) observer.observe(heading);
+    }
+  </script>
+</Layout>

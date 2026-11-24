@@ -1,0 +1,13 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getLibrary, getTopics, getConcepts, url } from '../lib/library.mjs';
+const topics = getTopics(), concepts = getConcepts();
+---
+<Layout title="Search the library — Tech Guides">
+  <section class="page-intro"><div class="eyebrow">THE LIBRARY</div><h1>Find the idea you need.</h1><p>Search {getLibrary().length.toLocaleString()} guides by concept, explanation, or code. Use the filters to narrow your focus.</p></section>
+  <section id="library-browser" data-catalog={url('catalog.json')} data-base={url()}>
+    <form id="library-search" class="library-search" role="search"><label for="query" class="sr-only">Search guides and concepts</label><input type="search" id="query" name="q" placeholder="Search concepts, explanations, and code…" data-search-input autocomplete="off" /><button class="button" type="submit">Search</button></form>
+    <div class="browser-layout"><aside class="filter-panel" aria-label="Filter guides"><h2>Refine your search</h2><label for="filter-topic">Area of study</label><select id="filter-topic"><option value="">All areas</option>{topics.map(topic => <option value={topic.id}>{topic.name} ({topic.count})</option>)}</select><label for="filter-format">Guide format</label><select id="filter-format"><option value="">All formats</option>{['Guide', 'Implementation', 'Comparison', 'Reference'].map(format => <option>{format}</option>)}</select><label for="filter-concept">Concept</label><select id="filter-concept"><option value="">All concepts</option>{concepts.slice().sort((a,b) => a.name.localeCompare(b.name)).map(concept => <option value={concept.id}>{concept.name}</option>)}</select><button class="clear-filters" id="clear-filters" type="button">Clear search & filters</button><div class="filter-note"><strong>Search across subjects</strong><p>A concept can appear in several areas. Try “PCA” or “principal component analysis” to discover the connections.</p></div></aside><div class="results-panel"><div class="results-heading"><p id="search-status" role="status" aria-live="polite">Loading the library…</p><span id="search-context"></span></div><p id="search-notice" class="notice" hidden></p><div id="search-results" class="search-results" aria-busy="true"></div><button id="load-more" class="button button-secondary" hidden type="button">Show more guides</button><noscript><p>The search interface needs JavaScript. You can still browse every guide through the <a href={url('concepts/')}>concept pages</a> or the topic pages linked from the <a href={url()}>homepage</a>.</p></noscript></div></div>
+  </section>
+  <script src="../scripts/search.js"></script>
+</Layout>

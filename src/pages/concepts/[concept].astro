@@ -1,0 +1,15 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import GuideCard from '../../components/GuideCard.astro';
+import { getConcepts, getTopics, url } from '../../lib/library.mjs';
+export function getStaticPaths() { return getConcepts().map(concept => ({ params: { concept: concept.id }, props: { concept } })); }
+const { concept } = Astro.props;
+const topicGroups = getTopics().filter(topic => concept.guides.some(guide => guide.topic === topic.id));
+const introductory = concept.guides.filter(guide => /introduction|fundamental|basics|explained|understanding/i.test(guide.title)).slice(0,3);
+---
+<Layout title={`${concept.name} — Concepts — Tech Guides`} description={concept.description}>
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href={url('concepts/')}>Concepts</a><span>/</span><span>{concept.name}</span></nav>
+  <section class="page-intro"><div class="eyebrow">ONE IDEA · {concept.guides.length} GUIDES · {topicGroups.length} AREAS</div><h1>{concept.name}</h1><p>{concept.description}</p><div class="tags concept-tags">{concept.aliases.map(alias => <span>{alias}</span>)}</div><a class="button" href={url(`search/?concept=${concept.id}`)}>Search within this concept</a></section>
+  {introductory.length > 0 && <section class="section-block"><div class="section-heading"><div><div class="eyebrow">GET YOUR BEARINGS</div><h2>Start with the fundamentals</h2></div></div><div class="guide-grid">{introductory.map(guide => <GuideCard guide={guide} />)}</div></section>}
+  {topicGroups.map(topic => <section class="section-block"><div class="section-heading"><div><div class="eyebrow">ANOTHER PERSPECTIVE</div><h2>{topic.name}</h2></div><a class="text-link" href={url(`topics/${topic.id}/`)}>Explore this area</a></div><div class="guide-grid">{concept.guides.filter(guide => guide.topic === topic.id).map(guide => <GuideCard guide={guide} compact />)}</div></section>)}
+</Layout>

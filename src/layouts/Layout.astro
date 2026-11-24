@@ -1,0 +1,52 @@
+---
+import '../styles/global.css';
+import { url, REPOSITORY } from '../lib/library.mjs';
+const { title = 'Tech Guides — A library for curious builders', description = 'Explore Python, mathematics, machine learning, data systems, and software engineering. Search concepts and connect ideas across practical guides.', wide = false } = Astro.props;
+const current = Astro.url.pathname;
+const canonical = new URL(current, Astro.site);
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#2455e8" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical.href} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
+    <title>{title}</title>
+    <script is:inline>try { const t = localStorage.getItem('theme'); if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) document.documentElement.dataset.theme = 'dark'; } catch {}</script>
+  </head>
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+    <header class="site-header" data-pagefind-ignore>
+      <div class="header-inner">
+        <a class="brand" href={url()} aria-label="Tech Guides home"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 5h6v15H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2Zm8 0h6a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-6V5Z" stroke="currentColor" stroke-width="1.7"/><path d="M7 9h1m8 0h1M7 13h1m8 0h1" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><span>Tech<span class="brand-light">Guides</span></span></a>
+        <nav aria-label="Main navigation"><a class:list={{ active: current.includes('/search/') || current.includes('/topics/') }} href={url('search/')}>Library</a><a class:list={{ active: current.includes('/concepts/') }} href={url('concepts/')}>Concepts</a><a class:list={{ active: current.includes('/paths/') }} href={url('paths/')}>Learning paths</a></nav>
+        <div class="header-actions"><a class="search-shortcut" href={url('search/')} aria-label="Search the library"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="1.8"/></svg><span>Search</span><kbd>/</kbd></a><button id="theme-toggle" class="icon-button" aria-label="Switch color theme" title="Switch color theme"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></button><a class="github-link" href={REPOSITORY} aria-label="Source on GitHub">GitHub <span aria-hidden="true">↗</span></a></div>
+      </div>
+    </header>
+    <main id="main" class:list={['site-main', { wide }]} tabindex="-1"><slot /></main>
+    <footer class="site-footer" data-pagefind-ignore><div><a class="footer-brand" href={url()}>TechGuides</a><span>A library for curious builders.</span></div><p>Read the idea. Explore the code. Connect the concepts.</p><a href={REPOSITORY}>Browse the source on GitHub</a></footer>
+    <script>
+      document.querySelector('#theme-toggle')?.addEventListener('click', () => {
+        const theme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+        document.documentElement.dataset.theme = theme;
+        try { localStorage.setItem('theme', theme); } catch {}
+      });
+      document.addEventListener('keydown', event => {
+        const target = event.target as HTMLElement;
+        if (event.key === '/' && !event.metaKey && !event.ctrlKey && !target.matches('input, textarea, select, [contenteditable="true"]')) {
+          event.preventDefault();
+          const search = document.querySelector<HTMLInputElement>('[data-search-input]');
+          if (search) search.focus(); else window.location.href = document.querySelector<HTMLAnchorElement>('.search-shortcut')!.href;
+        }
+      });
+    </script>
+  </body>
+</html>

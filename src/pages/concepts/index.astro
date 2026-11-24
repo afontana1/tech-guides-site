@@ -1,0 +1,20 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getConcepts, url } from '../../lib/library.mjs';
+const concepts = getConcepts().sort((a,b) => a.name.localeCompare(b.name));
+---
+<Layout title="Explore concepts — Tech Guides">
+  <section class="page-intro"><div class="eyebrow">FOLLOW YOUR CURIOSITY</div><h1>Ideas connect.<br />Explore the connections.</h1><p>One concept, many perspectives. Discover explanations, mathematical foundations, and implementations from across the library.</p></section>
+  <label class="sr-only" for="concept-filter">Filter concepts by name or abbreviation</label><input id="concept-filter" type="search" class="concept-filter" placeholder="Find a concept or abbreviation, like PCA or RAG…" data-search-input />
+  <p class="muted" id="concept-status" role="status">{concepts.length} concepts</p>
+  <div class="concept-grid">{concepts.map(concept => <a class="concept-card" href={url(`concepts/${concept.id}/`)} data-concept-keywords={[concept.name, ...concept.aliases].join(' ').toLowerCase()}><span class="concept-count">{concept.guides.length} guides · {new Set(concept.guides.map(guide => guide.topic)).size} areas</span><h2>{concept.name}</h2><p>{concept.description}</p><span class="concept-aliases">{concept.aliases.slice(0,3).join(' · ')}</span></a>)}</div>
+  <script>
+    const input = document.querySelector<HTMLInputElement>('#concept-filter')!;
+    const cards = [...document.querySelectorAll<HTMLElement>('[data-concept-keywords]')];
+    input.addEventListener('input', () => {
+      const query = input.value.toLowerCase().trim(); let visible = 0;
+      for (const card of cards) { card.hidden = !card.dataset.conceptKeywords!.includes(query); if (!card.hidden) visible++; }
+      document.querySelector('#concept-status')!.textContent = visible ? `${visible} ${visible === 1 ? 'concept' : 'concepts'}` : 'No concepts found. Try another name or abbreviation.';
+    });
+  </script>
+</Layout>

@@ -1,0 +1,27 @@
+---
+import Layout from '../layouts/Layout.astro';
+import GuideCard from '../components/GuideCard.astro';
+import { getLibrary, getTopics, getConcepts, url } from '../lib/library.mjs';
+import { paths } from '../data/topics.mjs';
+const guides = getLibrary(), topics = getTopics(), concepts = getConcepts();
+const popular = ['gradient-descent', 'pca', 'rag', 'cross-validation', 'python-functions', 'bayesian-inference'].map(id => concepts.find(c => c.id === id)).filter(Boolean);
+const featuredTitles = ['Principal Component Analysis (PCA) in Python', 'Mastering Python Decorators', 'Hypothesis Testing with Python Fundamentals and Concepts', 'Building Neural Networks from Scratch in Python', 'Components of a RAG System', 'Designing Reliable Distributed Systems'];
+const featured = featuredTitles.map(title => guides.find(guide => guide.title === title)).filter(Boolean);
+---
+<Layout>
+  <section class="hero">
+    <div class="eyebrow"><span class="eyebrow-line"></span> UNDERSTAND IT. BUILD WITH IT.</div>
+    <h1>Your next idea<br />starts <em>here.</em></h1>
+    <p class="hero-description">A growing library of concepts, practical guides, and Python implementations. Find what you need. Discover how it all connects.</p>
+    <form class="hero-search" action={url('search/')} role="search"><label class="sr-only" for="home-search">Search guides and concepts</label><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" stroke="currentColor" stroke-width="1.8"/><path d="m16 16 4 4" stroke="currentColor" stroke-width="1.8"/></svg><input id="home-search" name="q" type="search" placeholder="Try “overfitting”, “decorators”, or “RAG”" data-search-input /><button type="submit">Search library</button></form>
+    <div class="popular-searches"><span>Explore a concept</span>{popular.map(concept => <a href={url(`concepts/${concept.id}/`)}>{concept.id === 'pca' ? 'PCA' : concept.id === 'rag' ? 'RAG' : concept.name}</a>)}</div>
+    <div class="hero-stats"><div><strong>{guides.length.toLocaleString()}</strong><span>guides & implementations</span></div><div><strong>{topics.length}</strong><span>areas to explore</span></div><div><strong>{concepts.length}</strong><span>connected concepts</span></div><div class="hero-stats-note">Built around ideas.<br />Made for hands-on learning.</div></div>
+  </section>
+  <section class="section-block">
+    <div class="section-heading"><div><div class="eyebrow">FIND YOUR FOCUS</div><h2>Explore the library</h2><p>Choose a field, then follow your curiosity.</p></div><a class="text-link" href={url('search/')}>Browse all guides</a></div>
+    <div class="topic-grid">{topics.map(topic => <a class={`topic-card accent-${topic.color}`} href={url(`topics/${topic.id}/`)}><div class="topic-card-top"><span class="topic-symbol" aria-hidden="true">{topic.symbol}</span><span class="topic-count">{topic.count} guides</span></div><h3>{topic.name}</h3><p>{topic.description}</p></a>)}</div>
+  </section>
+  <section class="learning-feature section-block"><div><div class="eyebrow">FOLLOW THE CONNECTIONS</div><h2>A concept is a starting point.<br />See where it takes you.</h2><p>Move from an explanation to the math behind it, then to a working implementation. Concept pages bring related guides together across the whole library.</p><a class="button button-light" href={url('concepts/')}>Explore concepts</a></div><div class="concept-journey" aria-label="Example connections in machine learning"><a href={url('concepts/linear-algebra/')}><span class="journey-label">THE FOUNDATION</span><strong>Linear algebra</strong><span>Vectors, matrices, and transformations</span></a><div class="journey-connector" aria-hidden="true"></div><a href={url('concepts/pca/')}><span class="journey-label">THE CONNECTION</span><strong>Principal component analysis</strong><span>Find the directions that matter</span></a><div class="journey-connector" aria-hidden="true"></div><a href={url('concepts/dimensionality-reduction/')}><span class="journey-label">THE BIGGER PICTURE</span><strong>Dimensionality reduction</strong><span>Simpler representations, useful insights</span></a></div></section>
+  <section class="section-block"><div class="section-heading"><div><div class="eyebrow">A LITTLE DIRECTION</div><h2>Choose a learning path</h2><p>A suggested sequence of concepts to explore at your own pace.</p></div><a class="text-link" href={url('paths/')}>All learning paths</a></div><div class="path-grid">{paths.slice(0, 3).map((path, i) => <a class="path-card" href={url(`paths/#${path.id}`)}><span class={`path-label accent-${['blue','teal','purple'][i]}`}>{path.concepts.length} connected concepts</span><h3>{path.title}</h3><p>{path.description}</p><span class="text-link">Explore this path</span></a>)}</div></section>
+  <section class="section-block"><div class="section-heading"><div><div class="eyebrow">OPEN A NEW CHAPTER</div><h2>Good places to start</h2><p>Sample a few corners of the collection.</p></div></div><div class="guide-grid">{featured.map(guide => <GuideCard guide={guide} />)}</div></section>
+</Layout>
